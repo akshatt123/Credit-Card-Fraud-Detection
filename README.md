@@ -95,7 +95,7 @@ Stratified K-Fold is preferred when dealing with imbalanced datasets to reduce b
 
 **5. Hyperparameter Tuning (Optional)**
 
-GridSearchCV can be applied for hyperparameter tuning, allowing for optimal parameter selection. While computationally intensiveand too much time consuming, it can provide significant performance gains. 
+GridSearchCV can be applied for hyperparameter tuning, allowing for optimal parameter selection. While computationally intensive and too much time consuming, it can provide significant performance gains. 
 
 
 ## Results
@@ -116,7 +116,7 @@ GridSearchCV can be applied for hyperparameter tuning, allowing for optimal para
 
 ## Contribute
 
-Feel free to contribute by creating a pull request or opening an issue for improvements or suggestions!
+Feel free to contribute if you better and more optimized model, by creating a pull request or opening an issue for improvements or suggestions!
 
 ## License
 
