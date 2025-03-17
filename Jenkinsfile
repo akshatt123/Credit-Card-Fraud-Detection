@@ -11,32 +11,31 @@ pipeline {
     }
 
     stages {
-        stage('Clone Repository') {
-            steps {
-                script {
-                    try {
-                        echo '🔄 Cloning repository...'
-                        checkout([
-                            $class: 'GitSCM',
-                            branches: [[name: '*/main']],
-                            userRemoteConfigs: [[url: "${REPO_URL}"]]
-                        ])
-                        echo '✅ Repository cloned successfully.'
-                    } catch (Exception e) {
-                        echo "❌ Error in cloning repository: ${e}"
-                        currentBuild.result = 'FAILURE'
-                        error("Stopping pipeline due to Git clone failure.")
-                    }
-                }
-            }
+        stage('Checkout Repository') {
+    steps {
+        script {
+            echo '🔄 Checking out repository...'
+            checkout([
+                $class: 'GitSCM',
+                branches: [[name: '*/main']],
+                doGenerateSubmoduleConfigurations: false,
+                extensions: [[$class: 'WipeWorkspace']],
+                userRemoteConfigs: [[
+                    url: "${REPO_URL}",
+                    credentialsId: 'github-credential'
+                ]]
+            ])
+            echo '✅ Repository checked out successfully.'
         }
+    }
+}
 
         stage('Install Dependencies') {
             steps {
                 script {
                     try {
                         echo '📦 Installing dependencies...'
-                        sh 'pip install --no-cache-dir -r requirements.txt'
+                        bat 'pip install --no-cache-dir -r requirements.txt'
                         echo '✅ Dependencies installed successfully.'
                     } catch (Exception e) {
                         echo "❌ Dependency installation failed: ${e}"
@@ -52,7 +51,7 @@ pipeline {
                 script {
                     try {
                         echo '🧪 Running tests...'
-                        sh 'pytest tests/ --maxfail=1 --disable-warnings'
+                        bat 'python -m pytest tests/ --maxfail=1 --disable-warnings'
                         echo '✅ Tests executed successfully.'
                     } catch (Exception e) {
                         echo "❌ Tests failed: ${e}"
@@ -69,7 +68,7 @@ pipeline {
                     try {
                         echo '🔍 Running SonarQube analysis...'
                         withSonarQubeEnv("${SONARQUBE_SERVER}") {
-                            sh 'sonar-scanner -Dsonar.projectKey=fraud-detection -Dsonar.sources=.'
+                            bat 'sonar-scanner -Dsonar.projectKey=fraud-detection -Dsonar.sources=.'
                         }
                         echo '✅ SonarQube analysis completed.'
                     } catch (Exception e) {
@@ -84,7 +83,7 @@ pipeline {
                 script {
                     try {
                         echo '🐳 Building Docker image...'
-                        sh "docker build --no-cache -t ${DOCKER_IMAGE}:latest ."
+                        bat "docker build --no-cache -t ${DOCKER_IMAGE}:latest ."
                         echo '✅ Docker image built successfully.'
                     } catch (Exception e) {
                         echo "❌ Docker build failed: ${e}"
@@ -101,7 +100,7 @@ pipeline {
                     try {
                         echo '📤 Pushing Docker image to Docker Hub...'
                         withDockerRegistry([credentialsId: 'docker-hub-credentials', url: 'https://index.docker.io/v1/']) {
-                            sh "docker push ${DOCKER_IMAGE}:latest"
+                            bat "docker push ${DOCKER_IMAGE}:latest"
                         }
                         echo '✅ Docker image pushed successfully.'
                     } catch (Exception e) {
@@ -118,8 +117,8 @@ pipeline {
                 script {
                     try {
                         echo '🚀 Deploying application with Docker Compose...'
-                        sh "docker-compose down"  // Stop existing containers
-                        sh "docker-compose up --build -d"  // Build & start new containers
+                        bat "docker-compose down"  // Stop existing containers
+                        bat "docker-compose up --build -d"  // Build & start new containers
                         echo '✅ Application deployed successfully.'
                     } catch (Exception e) {
                         echo "❌ Deployment failed: ${e}"
