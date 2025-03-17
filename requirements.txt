@@ -1,0 +1,22 @@
+# Core Libraries
+pandas
+numpy
+matplotlib
+seaborn
+
+# Machine Learning & Model Handling
+scikit-learn
+xgboost
+imbalanced-learn
+joblib  # For saving/loading models
+
+# Web Framework
+flask
+flask-cors  # Enable CORS for API access
+
+# Database (PostgreSQL support)
+psycopg2-binary  # If using PostgreSQL
+sqlalchemy  # ORM for database operations
+
+# Additional Dependencies
+gunicorn  # For running Flask app in production
