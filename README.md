@@ -40,12 +40,10 @@ A comprehensive system for detecting fraudulent credit card transactions leverag
 
  * Random Under-Sampling: Randomly removed majority class samples to achieve balance.
 
-
 | Method | Description | Pros | Cons |
 | ------ | ----------- | ---- | ---- |
-| In-Algorithm Techniques. | Adjusts model weights for class imbalance. | Simple to implement. | May not work well on extreme imbalance. |
-| Under-Sampling. | Reduces majority class samples. | Effective for large datasets. | Risk of losing important data.
-
+| In-Algorithm Techniques | Adjusts model weights for class imbalance. | Simple to implement. | May not work well on extreme imbalance. |
+| Under-Sampling | Reduces majority class samples. | Effective for large datasets. | Risk of losing important data. |
 
 ## Dataset
 
@@ -95,31 +93,129 @@ Stratified K-Fold is preferred when dealing with imbalanced datasets to reduce b
 
 **5. Hyperparameter Tuning (Optional)**
 
-GridSearchCV can be applied for hyperparameter tuning, allowing for optimal parameter selection. While computationally intensive and too much time consuming, it can provide significant performance gains. 
+GridSearchCV can be applied for hyperparameter tuning, allowing for optimal parameter selection. While computationally intensive and time-consuming, it can provide significant performance gains.
 
+## Dockerization
+
+The project is containerized using Docker for easier deployment and portability.
+
+**Steps:**
+
+1. Created a `Dockerfile` specifying the necessary dependencies and configurations.
+2. Used a `requirements.txt` file to install dependencies inside the container.
+3. Built a Docker image for the project using:
+   ```bash
+   docker build -t credit-card-fraud-detection .
+   ```
+4. Ran the containerized application:
+   ```bash
+   docker run -p 5000:5000 credit-card-fraud-detection
+   ```
+
+## Docker Compose
+
+A `docker-compose.yml` file was created to manage multiple services, including the application and database.
+
+Example `docker-compose.yml`:
+```yaml
+version: '3.8'
+services:
+  app:
+    build: .
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: fraud_detection
+```
+
+Run using:
+```bash
+docker-compose up -d
+```
+
+## Jenkins CI/CD Pipeline
+
+Jenkins is used for automating builds and deployments.
+
+**Steps Implemented:**
+
+1. Created a `Jenkinsfile` to define the CI/CD pipeline.
+2. Configured Jenkins to build, test, and deploy the Docker container.
+3. Integrated SonarQube for static code analysis.
+
+Example `Jenkinsfile`:
+```groovy
+pipeline {
+    agent any
+    stages {
+        stage('Checkout') {
+            steps {
+                git 'https://github.com/user/repo.git'
+            }
+        }
+        stage('Build') {
+            steps {
+                sh 'docker build -t credit-card-fraud-detection .'
+            }
+        }
+        stage('Test') {
+            steps {
+                sh 'pytest tests/'
+            }
+        }
+        stage('Code Analysis') {
+            steps {
+                sh 'sonar-scanner'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                sh 'docker run -p 5000:5000 credit-card-fraud-detection'
+            }
+        }
+    }
+}
+```
+
+## SonarQube Integration
+
+SonarQube is integrated for static code analysis and code quality checks.
+
+**Steps:**
+
+1. Configured a SonarQube server.
+2. Installed `sonar-scanner` and added SonarQube analysis to the Jenkins pipeline.
+3. Used the following command for analysis:
+   ```bash
+   sonar-scanner -Dsonar.projectKey=credit-card-fraud -Dsonar.host.url=http://localhost:9000
+   ```
 
 ## Results
 
-* Achieved high detection accuracy and ROC-AUC scores with ensemble models like Random Forest,XGBoost and SVM.
-
+* Achieved high detection accuracy and ROC-AUC scores with ensemble models like Random Forest, XGBoost, and SVM.
 * Imbalance handling techniques (e.g., SMOTE, class weighting) significantly improved model robustness.
-
 * Confusion Matrix analysis revealed detailed insights into misclassification patterns.
+* Successfully containerized and automated CI/CD pipeline using Jenkins and Docker.
+* Improved code quality through SonarQube static analysis.
 
 ## Future Work
 
-* Experiment with deep learning models for fraud detection and try more optimizer to reduce time complexity.
-
+* Experiment with deep learning models for fraud detection and try more optimizers to reduce time complexity.
 * Optimize hyperparameters using advanced techniques like Bayesian Optimization.
-
 * Deploy the model as a REST API for real-time fraud detection.
+* Enhance CI/CD pipeline with Kubernetes for scalable deployments.
 
 ## Contribute
 
-Feel free to contribute if you better and more optimized model, by creating a pull request or opening an issue for improvements or suggestions!
+Feel free to contribute if you have a better and more optimized model, by creating a pull request or opening an issue for improvements or suggestions!
 
 ## License
 
 This project is licensed under the MIT License. See the LICENSE file for details.
-
 
