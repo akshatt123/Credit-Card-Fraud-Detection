@@ -211,11 +211,5 @@ SonarQube is integrated for static code analysis and code quality checks.
 * Deploy the model as a REST API for real-time fraud detection.
 * Enhance CI/CD pipeline with Kubernetes for scalable deployments.
 
-## Contribute
 
-Feel free to contribute if you have a better and more optimized model, by creating a pull request or opening an issue for improvements or suggestions!
-
-## License
-
-This project is licensed under the MIT License. See the LICENSE file for details.
 
